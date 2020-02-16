@@ -23,7 +23,7 @@
         :start-x="getChildrenStartX(index)"
         :level="level + 1"
         :x-level="index + xLevel"
-        @refreshFirstLevel="$emit('refreshFirstLevel')"
+        @refreshParent="refreshMeAndParent"
       ></org-chart>
     </g>
   </g>
@@ -105,12 +105,17 @@ export default {
       setTimeout(() => {
         if (!this.$refs.childrenGroup) {
           this.$emit("update:width", 100);
+          this.$emit('refreshParent')
           return;
         }
         const pos = this.$refs.childrenGroup.getBoundingClientRect();
         this.$emit("update:width", pos.width);
-        this.$emit('refreshFirstLevel')
+        this.$emit('refreshParent')
       }, 100);
+    },
+
+    refreshMeAndParent () {
+      this.refreshWidth()
     }
   },
 

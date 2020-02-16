@@ -8,7 +8,7 @@
       y="0"
     >
       <g ref="orgChart">
-        <OrgChart v-if="orgData" :org-data="orgData" @refreshFirstLevel="refreshOrgChart"></OrgChart>
+        <OrgChart v-if="orgData" :org-data="orgData" @refreshParent="refreshOrgChart"></OrgChart>
       </g>
     </svg>
   </div>
@@ -32,16 +32,17 @@ export default {
   },
 
   methods: {
-    generateOrgdata(level = 1, previousName = "") {
+    generateOrgdata(level = 1) {
       const org = {
-        name: `A-${level} (${previousName || "-"})`,
+        name: `A-${level}`,
         children: [],
         width: 100
       };
-      const childrenSize = level === 5 ? 0 : Math.floor(Math.random() * 11);
+      const childrenSize = level === 5 ? 0 : Math.floor(Math.random() * 4);
       for (var i = 0; i < childrenSize; i++) {
-        org.children.push(this.generateOrgdata(level + 1, `${level}-${i}`));
+        org.children.push(this.generateOrgdata(level + 1));
       }
+      org.name += ` (${org.children.length})`
       return org;
     },
 
@@ -50,9 +51,8 @@ export default {
         const chart = this.$refs.orgChart.getBoundingClientRect()
         this.orgChartWidth = chart.width;
         this.orgChartHeight = chart.height;
-        console.log(this.orgChartHeight)
         this.orgData.width = this.orgChartWidth;
-      }, 500);
+      }, 100);
     }
   },
 
