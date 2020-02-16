@@ -8,8 +8,9 @@
       :x="startX"
       :y="yVal"
       :is-first-level="level === 1"
-      :is-last-level="orgData.children.length===0"
+      :is-last-level="orgData.children.length===0 || !isShowChildren"
       :is-show-next-level.sync="isShowChildren"
+      @refreshView="refreshWidth"
     ></org-function>
 
     <line v-if="orgData.children.length && isShowChildren" :x1="startX + 50" :y1="yVal + 80" :x2="(startX + orgData.children.reduce((acc, child) => (acc + child.width), 0))" :y2="yVal + 80" stroke="black"></line>
@@ -22,7 +23,7 @@
         :start-x="getChildrenStartX(index)"
         :level="level + 1"
         :x-level="index + xLevel"
-        :level-items-counts="levelItemsCounts"
+        @refreshFirstLevel="$emit('refreshFirstLevel')"
       ></org-chart>
     </g>
   </g>
@@ -59,14 +60,6 @@ export default {
       default: 1
     },
 
-    levelItemsCounts: {
-      type: Object,
-      required: false,
-      default() {
-        return {};
-      }
-    },
-
     width: {
       type: Number,
       required: false
@@ -81,8 +74,6 @@ export default {
 
   data() {
     return {
-      childrenWidth: 0,
-      childrenLeft: 0,
       isShowChildren: false
     };
   },
@@ -93,17 +84,7 @@ export default {
     },
 
     xVal() {
-      // if (this.childrenLeft) {
-      //   return this.childrenLeft
-      // }
       return this.startX;
-      // return this.startX + (this.xLevel - 1) * 110;
-    },
-
-    fnWidth() {
-      const width =
-        this.childrenWidth || (this.orgData.children.length || 1) * 60;
-      return width > 100 ? width : 100;
     }
   },
 
@@ -118,29 +99,22 @@ export default {
           .slice(0, index)
           .reduce((acc, child) => child.width + acc + 10, 0)
       );
+    },
+
+    refreshWidth () {
+      setTimeout(() => {
+        if (!this.$refs.childrenGroup) {
+          this.$emit("update:width", 100);
+          return;
+        }
+        const pos = this.$refs.childrenGroup.getBoundingClientRect();
+        this.$emit("update:width", pos.width);
+        this.$emit('refreshFirstLevel')
+      }, 100);
     }
   },
 
   mounted() {
-    this.$set(
-      this.levelItemsCounts,
-      this.level,
-      this.levelItemsCounts[this.level] || 0
-    );
-    this.$set(
-      this.levelItemsCounts,
-      this.level,
-      Math.max(this.levelItemsCounts[this.level], this.xLevel)
-    );
-    setTimeout(() => {
-      if (!this.$refs.childrenGroup) {
-        return;
-      }
-      const pos = this.$refs.childrenGroup.getBoundingClientRect();
-      this.childrenWidth = pos.width;
-      this.childrenLeft = pos.left;
-      this.$emit("update:width", this.childrenWidth);
-    }, 100);
   }
 };
 </script>

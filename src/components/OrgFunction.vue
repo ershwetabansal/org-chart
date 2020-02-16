@@ -24,6 +24,7 @@ export default {
   methods: {
     showHideNextLevel () {
       this.$emit('update:isShowNextLevel', !this.isShowNextLevel)
+      this.$emit('refreshView')
     }
   }
 };

@@ -1,20 +1,16 @@
 <template>
   <div id="app">
-      <!-- :width="orgChartWidth || ((maxChildrenOnOneLevel * 100) + 100)"
-      :height="orgChartHeight || (300)" -->
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width="5000"
-      height="1000"
+      :width="orgChartWidth"
+      :height="orgChartHeight"
       x="0"
       y="0"
     >
       <g ref="orgChart">
-        <OrgChart v-if="orgData" :org-data="orgData" :level-items-counts="orgChartLevels"></OrgChart>
+        <OrgChart v-if="orgData" :org-data="orgData" @refreshFirstLevel="refreshOrgChart"></OrgChart>
       </g>
     </svg>
-    <div>{{ orgChartLevels }}</div>
-    <div>{{ maxChildrenOnOneLevel }}</div>
   </div>
 </template>
 
@@ -30,16 +26,9 @@ export default {
   data() {
     return {
       orgData: null,
-      orgChartLevels: {},
       orgChartWidth: 0,
       orgChartHeight: 0
     };
-  },
-
-  computed: {
-    maxChildrenOnOneLevel() {
-      return this.orgChartLevels[Math.max(...Object.keys(this.orgChartLevels))];
-    }
   },
 
   methods: {
@@ -54,17 +43,22 @@ export default {
         org.children.push(this.generateOrgdata(level + 1, `${level}-${i}`));
       }
       return org;
+    },
+
+    refreshOrgChart () {
+      setTimeout(() => {
+        const chart = this.$refs.orgChart.getBoundingClientRect()
+        this.orgChartWidth = chart.width;
+        this.orgChartHeight = chart.height;
+        console.log(this.orgChartHeight)
+        this.orgData.width = this.orgChartWidth;
+      }, 500);
     }
   },
 
   mounted() {
     this.orgData = this.generateOrgdata();
-    setTimeout(() => {
-      this.orgChartWidth = this.$refs.orgChart.getBoundingClientRect().width;
-      this.orgChartHeight = this.$refs.orgChart.getBoundingClientRect().height;
-      console.log(this.orgData);
-      this.orgData.width = this.orgChartWidth;
-    }, 500);
+    this.refreshOrgChart()
   }
 };
 </script>
