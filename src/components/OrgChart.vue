@@ -9,10 +9,11 @@
       :y="yVal"
       :is-first-level="level === 1"
       :is-last-level="orgData.children.length===0"
+      :is-show-next-level.sync="isShowChildren"
     ></org-function>
 
-    <line v-if="orgData.children.length" :x1="startX + 50" :y1="yVal + 80" :x2="(startX + orgData.children.reduce((acc, child) => (acc + child.width), 0))" :y2="yVal + 80" stroke="black"></line>
-    <g ref="childrenGroup" v-if="orgData.children.length">
+    <line v-if="orgData.children.length && isShowChildren" :x1="startX + 50" :y1="yVal + 80" :x2="(startX + orgData.children.reduce((acc, child) => (acc + child.width), 0))" :y2="yVal + 80" stroke="black"></line>
+    <g ref="childrenGroup" v-if="orgData.children.length && isShowChildren">
       <org-chart
         v-for="(data, index) in orgData.children"
         :key="index"
@@ -81,7 +82,8 @@ export default {
   data() {
     return {
       childrenWidth: 0,
-      childrenLeft: 0
+      childrenLeft: 0,
+      isShowChildren: false
     };
   },
 
@@ -131,7 +133,6 @@ export default {
       Math.max(this.levelItemsCounts[this.level], this.xLevel)
     );
     setTimeout(() => {
-      console.log(this.orgData.name);
       if (!this.$refs.childrenGroup) {
         return;
       }
@@ -139,7 +140,6 @@ export default {
       this.childrenWidth = pos.width;
       this.childrenLeft = pos.left;
       this.$emit("update:width", this.childrenWidth);
-      console.log(pos.left);
     }, 100);
   }
 };

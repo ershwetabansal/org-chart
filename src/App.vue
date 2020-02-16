@@ -1,9 +1,11 @@
 <template>
   <div id="app">
+      <!-- :width="orgChartWidth || ((maxChildrenOnOneLevel * 100) + 100)"
+      :height="orgChartHeight || (300)" -->
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      :width="orgChartWidth || ((maxChildrenOnOneLevel * 100) + 100)"
-      :height="orgChartHeight || (300)"
+      width="5000"
+      height="1000"
       x="0"
       y="0"
     >
@@ -47,7 +49,7 @@ export default {
         children: [],
         width: 100
       };
-      const childrenSize = level === 3 ? 0 : Math.floor(Math.random() * 11);
+      const childrenSize = level === 5 ? 0 : Math.floor(Math.random() * 11);
       for (var i = 0; i < childrenSize; i++) {
         org.children.push(this.generateOrgdata(level + 1, `${level}-${i}`));
       }
@@ -58,10 +60,8 @@ export default {
   mounted() {
     this.orgData = this.generateOrgdata();
     setTimeout(() => {
-      console.log(this.$refs.orgChart);
       this.orgChartWidth = this.$refs.orgChart.getBoundingClientRect().width;
       this.orgChartHeight = this.$refs.orgChart.getBoundingClientRect().height;
-      console.log(this.orgChartWidth);
       console.log(this.orgData);
       this.orgData.width = this.orgChartWidth;
     }, 500);
