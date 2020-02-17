@@ -9,7 +9,7 @@
 
 <script>
 export default {
-  name: "OrgFunction",
+  name: "OrgChartNode",
 
   props: ["name", "width", "height", "x", "y", "isFirstLevel", "isLastLevel", "isShowNextLevel"],
 

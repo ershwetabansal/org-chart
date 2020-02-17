@@ -1,16 +1,9 @@
 <template>
   <div id="app">
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      :width="orgChartWidth"
-      :height="orgChartHeight"
-      x="0"
-      y="0"
-    >
-      <g ref="orgChart">
-        <OrgChart v-if="orgData" :org-data="orgData" @refreshParent="refreshOrgChart"></OrgChart>
-      </g>
-    </svg>
+    <OrgChart
+      v-if="orgData"
+      :org-data="orgData"
+      @refreshParent="refreshOrgChart"></OrgChart>
   </div>
 </template>
 
@@ -25,9 +18,7 @@ export default {
 
   data() {
     return {
-      orgData: null,
-      orgChartWidth: 0,
-      orgChartHeight: 0
+      orgData: null
     };
   },
 
@@ -44,21 +35,11 @@ export default {
       }
       org.name += ` (${org.children.length})`
       return org;
-    },
-
-    refreshOrgChart () {
-      setTimeout(() => {
-        const chart = this.$refs.orgChart.getBoundingClientRect()
-        this.orgChartWidth = chart.width;
-        this.orgChartHeight = chart.height;
-        this.orgData.width = this.orgChartWidth;
-      }, 100);
     }
   },
 
   mounted() {
     this.orgData = this.generateOrgdata();
-    this.refreshOrgChart()
   }
 };
 </script>
